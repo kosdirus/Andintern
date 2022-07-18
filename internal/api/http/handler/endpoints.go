@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/kosdirus/andintern/internal/model"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -67,6 +68,36 @@ func getCar(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	w.Write([]byte(fmt.Sprintf("requested data for id: %d, car: %v.\n Values:%v", id, car, values)))
 
+}
+
+func (srv *Server) upsertCar(w http.ResponseWriter, r *http.Request) {
+	car := model.Car{}
+	err := json.NewDecoder(r.Body).Decode(&car)
+	if err != nil {
+		w.WriteHeader(400)
+		w.Write([]byte("wrong body parameters"))
+		return
+	}
+
+	//qRow := srv.andintern.DB().QueryRow("insert into ?.cars (brand, price)" +
+	//	"values ('?', ?);", srv.cfg.DB.SchemaName, car.Brand, car.Price)
+
+	_, err = srv.andintern.DB().Exec("insert into andintern.cars (brand, price)"+
+		" values ($1, $2);", /*srv.cfg.DB.SchemaName,*/ car.Brand, car.Price)
+	if err != nil {
+		log.Fatalf("error while inserting %v: %v", car, err.Error())
+	}
+
+	/*for _, v := range cars {
+		if car.Brand == v.Brand {
+			w.WriteHeader(400)
+			w.Write([]byte(fmt.Sprintf("provided car brand already exists: '%s'", car.Brand)))
+			return
+		}
+	}
+	cars = append(cars, car)*/
+
+	w.Write([]byte(fmt.Sprintf("created car: %v", car)))
 }
 
 func createCar(w http.ResponseWriter, r *http.Request) {

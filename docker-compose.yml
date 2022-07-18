@@ -1,0 +1,10 @@
+version: '3'
+services:
+  db:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_USER: andintern_user
+      POSTGRES_DB: andintern
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+    - 5443:5432

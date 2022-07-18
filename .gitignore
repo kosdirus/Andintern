@@ -1,0 +1,4 @@
+gobin/
+bin/
+config.json
+/internal/api/http/handler/endpoints
