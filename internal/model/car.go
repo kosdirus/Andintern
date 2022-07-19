@@ -1,7 +1,7 @@
 package model
 
 type Car struct {
-	Id    int    `json:"id"`
-	Brand string `json:"brand" db:"brand"`
-	Price int    `json:"price" db:"price"`
+	Id    int    `json:"id,omitempty"`
+	Brand string `json:"brand,omitempty" db:"brand"`
+	Price int    `json:"price,omitempty" db:"price"`
 }
