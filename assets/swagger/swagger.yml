@@ -1,0 +1,164 @@
+swagger: "2.0"
+info:
+  description: "This is a server for storing and manipulating with Car objects which can have id, brand and price fields."
+  version: "0.0.1"
+  title: "Andintern"
+
+consumes:
+  - application/json
+
+produces:
+  - application/json
+
+definitions:
+  Car:
+    type: "object"
+    properties:
+      id:
+        description: "Car id in database"
+        type: "integer"
+        example: "10"
+      brand:
+        description: "Brand name of the car"
+        type: "string"
+        example: "volvo"
+      price:
+        description: "Price of the car"
+        type: "integer"
+        example: "45000"
+  CarWithoutID:
+    type: "object"
+    properties:
+      brand:
+        description: "Brand name of the car"
+        type: "string"
+        example: "volvo"
+      price:
+        description: "Price of the car"
+        type: "integer"
+        example: "45000"
+
+
+host: "andintern.website"
+basePath: "/"
+tags:
+  - name: "api"
+    description: "Manipulate with Cars in database"
+schemes:
+  - "https"
+  - "http"
+paths:
+  /api:
+    get:
+      tags:
+        - "api"
+      summary: "Find Car by ID, Brand or without query parameters"
+      description: "Returns a single car if `ID` or `Brand` query parameter is provided. Otherwise returns all cars from database."
+      operationId: "getCar"
+      parameters:
+        - name: "id"
+          in: "query"
+          description: "ID of car to return"
+          required: false
+          type: "integer"
+        - name: "brand"
+          in: "query"
+          description: "Brand name of car to return"
+          required: false
+          type: "integer"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Car"
+        "400":
+          description: "Bad request"
+        "404":
+          description: "Not found"
+        "500":
+          description: "Internal server error"
+    post:
+      tags:
+        - "api"
+      summary: "Add a new Car to the database"
+      description: "Сreates an entry in the database if there is no car with that `brand` in the database yet"
+      operationId: "addCar"
+      parameters:
+        - in: "body"
+          name: "car"
+          description: "Car object that should be added to the store. Fields should not be empty."
+          required: true
+          schema:
+            $ref: "#/definitions/CarWithoutID"
+      responses:
+        "200":
+          description: "Success"
+        "400":
+          description: "Bad request"
+          schema:
+            type: "string"
+            example: "wrong body parameters / provided car brand already exist"
+        "500":
+          description: "Internal server error"
+    put:
+      tags:
+        - "api"
+      summary: "Update an existing car"
+      description: "Updates car object provided by id in query parameter. Can update `id` or `brand`, or `both`. Data to update should be provided as valid json in body. "
+      operationId: "updateCar"
+      parameters:
+        - in: "query"
+          name: "id"
+          description: "ID of car to update"
+          required: true
+          type: "integer"
+        - in: "body"
+          name: "car"
+          description: "Field(s) of Car object to update"
+          required: true
+          schema:
+            $ref: "#/definitions/CarWithoutID"
+      responses:
+        "200":
+          description: "Success"
+        "400":
+          description: "Bad request"
+          schema:
+            type: "string"
+            example: "missing or wrong id / wrong body parameters / provided car brand already exist"
+        "404":
+          description: "Not found"
+        "500":
+          description: "Internal server error"
+    delete:
+      tags:
+        - "api"
+      summary: "Delete car from database"
+      description: "Deletes car(s) object with provided `id` / `brand` / `priceLowerThan`. For id or brand deletes one car from database. For 'priceLowerThan' deletes all cars with price lower than provided. At least one query parameter should be provided."
+      operationId: "deleteCar"
+      parameters:
+        - in: "query"
+          name: "id"
+          description: "ID of car to delete"
+          required: false
+          type: "integer"
+        - in: "query"
+          name: "brand"
+          description: "Brand of car to delete"
+          required: false
+          type: "string"
+        - in: "query"
+          name: "priceLowerThan"
+          description: "Price to delete all cars with price lower than provided"
+          required: false
+          type: "integer"
+      responses:
+        "200":
+          description: "Success"
+        "400":
+          description: "Bad request"
+        "404":
+          description: "Not found"
+        "500":
+          description: "Internal server error"
+    

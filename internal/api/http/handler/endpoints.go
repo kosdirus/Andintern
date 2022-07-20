@@ -32,7 +32,7 @@ func (srv Server) getCar(w http.ResponseWriter, r *http.Request) {
 		srv.andintern.DB().Get(&get, "SELECT * FROM andintern.cars "+
 			"WHERE id=$1", id)
 		if get.Id == 0 {
-			w.WriteHeader(400)
+			w.WriteHeader(http.StatusNotFound)
 			w.Write([]byte(fmt.Sprintf("in database no car with such id: %d", id)))
 			return
 		}
@@ -147,6 +147,12 @@ func (srv *Server) createCar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if car.Brand == "" || car.Price == 0 {
+		w.WriteHeader(400)
+		w.Write([]byte("body parameters should not be empty"))
+		return
+	}
+
 	_, err = srv.andintern.DB().Exec("insert into andintern.cars (brand, price)"+
 		" values ($1, $2);", /*srv.cfg.DB.SchemaName,*/ car.Brand, car.Price)
 
@@ -155,11 +161,11 @@ func (srv *Server) createCar(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(fmt.Sprintf("provided car brand already exists: '%s'", car.Brand)))
 		return
 	} else if err != nil {
-		w.WriteHeader(400)
+		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(fmt.Sprintf("error while inserting %v: %v", car, err.Error())))
 		return
 	}
-
+	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(fmt.Sprintf("created car with brand: %s, price: %d", car.Brand, car.Price)))
 }
 
@@ -202,8 +208,8 @@ func (srv *Server) updateCar(w http.ResponseWriter, r *http.Request) {
 	srv.andintern.DB().Get(&res, "SELECT * FROM andintern.cars "+
 		"WHERE id=$1", id)
 	if res.Id == 0 {
-		w.WriteHeader(400)
-		w.Write([]byte(fmt.Sprintf("in database no car with such id: %d", id)))
+		w.WriteHeader(404)
+		w.Write([]byte(fmt.Sprintf("not found car with such id: %d", id)))
 		return
 	}
 
@@ -224,7 +230,7 @@ func (srv *Server) updateCar(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(fmt.Sprintf("provided car brand already exists: '%s'", car.Brand)))
 			return
 		} else if err != nil {
-			w.WriteHeader(400)
+			w.WriteHeader(500)
 			w.Write([]byte(fmt.Sprintf("error while updating car with id %d: %v", id, err.Error())))
 			return
 		}
@@ -315,7 +321,7 @@ func (srv *Server) deleteCar(w http.ResponseWriter, r *http.Request) {
 		srv.andintern.DB().Get(&get, "SELECT * FROM andintern.cars "+
 			"WHERE id=$1", id)
 		if get.Id == 0 {
-			w.WriteHeader(400)
+			w.WriteHeader(404)
 			w.Write([]byte(fmt.Sprintf("in database no car with such id: %d", id)))
 			return
 		}
@@ -323,7 +329,7 @@ func (srv *Server) deleteCar(w http.ResponseWriter, r *http.Request) {
 		_, err = srv.andintern.DB().Exec("DELETE FROM andintern.cars "+
 			"WHERE id = $1;", id)
 		if err != nil {
-			w.WriteHeader(400)
+			w.WriteHeader(500)
 			w.Write([]byte(fmt.Sprintf("error while deleting car with id %d: %v", id, err.Error())))
 			return
 		}
@@ -339,7 +345,7 @@ func (srv *Server) deleteCar(w http.ResponseWriter, r *http.Request) {
 		srv.andintern.DB().Get(&get, "SELECT * FROM andintern.cars "+
 			"WHERE brand=$1", brand)
 		if get.Brand == "" {
-			w.WriteHeader(400)
+			w.WriteHeader(404)
 			w.Write([]byte(fmt.Sprintf("in database no car with such brand: %s", brand)))
 			return
 		}
@@ -347,7 +353,7 @@ func (srv *Server) deleteCar(w http.ResponseWriter, r *http.Request) {
 		_, err := srv.andintern.DB().Exec("DELETE FROM andintern.cars "+
 			"WHERE brand = $1;", brand)
 		if err != nil {
-			w.WriteHeader(400)
+			w.WriteHeader(500)
 			w.Write([]byte(fmt.Sprintf("error while deleting car with brand '%s': %v", brand, err.Error())))
 			return
 		}
@@ -369,7 +375,7 @@ func (srv *Server) deleteCar(w http.ResponseWriter, r *http.Request) {
 		err = srv.andintern.DB().Get(&get, "SELECT * FROM andintern.cars "+
 			"WHERE price<$1 LIMIT 1", priceLowerThan)
 		if err != nil {
-			w.WriteHeader(400)
+			w.WriteHeader(404)
 			w.Write([]byte(fmt.Sprintf("no cars in database with price lower than %d", priceLowerThan)))
 			return
 		}
@@ -377,7 +383,7 @@ func (srv *Server) deleteCar(w http.ResponseWriter, r *http.Request) {
 		_, err = srv.andintern.DB().Exec("DELETE FROM andintern.cars "+
 			"WHERE price<$1", priceLowerThan)
 		if err != nil {
-			w.WriteHeader(400)
+			w.WriteHeader(500)
 			w.Write([]byte(fmt.Sprintf("error while deleting car with price lower than '%d': %v",
 				priceLowerThan, err.Error())))
 			return
