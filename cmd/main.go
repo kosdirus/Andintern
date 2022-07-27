@@ -5,6 +5,7 @@ import (
 	"github.com/kosdirus/andintern/internal/api/http/handler"
 	"github.com/kosdirus/andintern/internal/config"
 	"github.com/kosdirus/andintern/internal/database"
+	"github.com/kosdirus/andintern/internal/database/dataprovider/pg"
 	"log"
 )
 
@@ -29,7 +30,9 @@ func main() {
 		log.Fatalf("can't migrate the database")
 	}
 
-	core := andintern.NewCore(cfg, db)
+	txer := pg.NewTxManager(db)
+	carStore := pg.NewCarStore(db, txer)
+	core := andintern.NewCore(cfg, db, carStore, txer)
 
 	apiServer, err := handler.NewServer(cfg, core)
 	if err != nil {

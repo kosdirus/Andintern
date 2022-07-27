@@ -32,26 +32,22 @@ definitions:
       brand:
         description: "Brand name of the car"
         type: "string"
-        example: "volvo"
+        example: volvo
       price:
         description: "Price of the car"
         type: "integer"
-        example: "45000"
+        example: 45000
 
-
-host: "andintern.website"
-basePath: "/"
 tags:
-  - name: "api"
+  - name: "car"
     description: "Manipulate with Cars in database"
 schemes:
-  - "https"
   - "http"
 paths:
-  /api:
+  /api/car:
     get:
       tags:
-        - "api"
+        - "car"
       summary: "Find Car by ID, Brand or without query parameters"
       description: "Returns a single car if `ID` or `Brand` query parameter is provided. Otherwise returns all cars from database."
       operationId: "getCar"
@@ -65,7 +61,7 @@ paths:
           in: "query"
           description: "Brand name of car to return"
           required: false
-          type: "integer"
+          type: "string"
       responses:
         "200":
           description: "Success"
@@ -79,7 +75,7 @@ paths:
           description: "Internal server error"
     post:
       tags:
-        - "api"
+        - "car"
       summary: "Add a new Car to the database"
       description: "Сreates an entry in the database if there is no car with that `brand` in the database yet"
       operationId: "addCar"
@@ -102,7 +98,7 @@ paths:
           description: "Internal server error"
     put:
       tags:
-        - "api"
+        - "car"
       summary: "Update an existing car"
       description: "Updates car object provided by id in query parameter. Can update `id` or `brand`, or `both`. Data to update should be provided as valid json in body. "
       operationId: "updateCar"
@@ -132,7 +128,7 @@ paths:
           description: "Internal server error"
     delete:
       tags:
-        - "api"
+        - "car"
       summary: "Delete car from database"
       description: "Deletes car(s) object with provided `id` / `brand` / `priceLowerThan`. For id or brand deletes one car from database. For 'priceLowerThan' deletes all cars with price lower than provided. At least one query parameter should be provided."
       operationId: "deleteCar"
@@ -161,4 +157,3 @@ paths:
           description: "Not found"
         "500":
           description: "Internal server error"
-    
