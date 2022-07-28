@@ -43,8 +43,7 @@ func RespondDataOK(ctx context.Context, w http.ResponseWriter, val interface{}) 
 	RespondData(ctx, w, http.StatusOK, val)
 }
 
-func RespondError(ctx context.Context, w http.ResponseWriter, err error) {
-	var code = http.StatusBadRequest
+func RespondError(ctx context.Context, w http.ResponseWriter, code int, err error) {
 	data := &Response{
 		Error: err.Error(),
 	}

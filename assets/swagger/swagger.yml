@@ -69,10 +69,6 @@ paths:
             $ref: "#/definitions/Car"
         "400":
           description: "Bad request"
-        "404":
-          description: "Not found"
-        "500":
-          description: "Internal server error"
     post:
       tags:
         - "car"
@@ -94,8 +90,6 @@ paths:
           schema:
             type: "string"
             example: "wrong body parameters / provided car brand already exist"
-        "500":
-          description: "Internal server error"
     put:
       tags:
         - "car"
@@ -122,10 +116,6 @@ paths:
           schema:
             type: "string"
             example: "missing or wrong id / wrong body parameters / provided car brand already exist"
-        "404":
-          description: "Not found"
-        "500":
-          description: "Internal server error"
     delete:
       tags:
         - "car"
@@ -153,7 +143,3 @@ paths:
           description: "Success"
         "400":
           description: "Bad request"
-        "404":
-          description: "Not found"
-        "500":
-          description: "Internal server error"

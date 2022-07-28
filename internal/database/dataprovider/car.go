@@ -3,6 +3,7 @@ package dataprovider
 import (
 	"context"
 	"fmt"
+	httpv1 "github.com/kosdirus/andintern/internal/api/http/handler/v1"
 	"github.com/kosdirus/andintern/internal/model"
 )
 
@@ -10,7 +11,7 @@ type CarStore interface {
 	GetByFilter(ctx context.Context, filter *CarFilter) (*model.Car, error)
 	GetListByFilter(ctx context.Context, filter *CarFilter) ([]*model.Car, error)
 	Insert(ctx context.Context, car *model.Car) error
-	Update(ctx context.Context, car *model.Car) error
+	Update(ctx context.Context, car *httpv1.CarToUpdate) error
 	DeleteByFilter(ctx context.Context, filter *CarFilter) error
 }
 
@@ -31,7 +32,7 @@ func (f CarFilter) String() string {
 	}
 
 	if f.Price != 0 {
-		return fmt.Sprintf("price: '%d'", f.Price)
+		return fmt.Sprintf("priceLowerThan: '%d'", f.Price)
 	}
 
 	return fmt.Sprintf("id: %d; brand: %s; price: %d", f.ID, f.Brand, f.Price)

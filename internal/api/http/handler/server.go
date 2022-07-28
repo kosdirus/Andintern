@@ -32,12 +32,12 @@ func NewServer(cfg *config.Config, andintern *andintern.Core) (*Server, error) {
 	if cfg.API.ServeSwagger {
 		registerSwagger(r)
 	}
-	// TODO api/cars
+
 	r.Route("/api/car", func(r chi.Router) {
-		r.Get("/", srv.getCar)       // для вывода всех машин или одной машины по бренду или айди
-		r.Post("/", srv.createCar)   // для создания записи о машине
-		r.Put("/", srv.updateCar)    // для обновления записи о машине по айди (может меняться бренд и/или цена)
-		r.Delete("/", srv.deleteCar) // для удаления записи по бренду/айди/цене ниже указанной
+		r.Get("/", srv.getCar)       // to display all cars or one car by brand or ID
+		r.Post("/", srv.createCar)   // to create a car record in database
+		r.Put("/", srv.updateCar)    // to update a car record by ID (brand and/or price may change)
+		r.Delete("/", srv.deleteCar) // to delete car entry by brand/ID/price below the specified one
 
 	})
 
